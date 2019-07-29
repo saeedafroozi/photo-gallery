@@ -1,0 +1,80 @@
+.body{
+  margin: 0px;
+}
+.sidebar {
+  margin: 0;
+  padding: 0;
+  width: 200px;
+  background-color: #f1f1f1;
+  position: fixed;
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar{
+           a{
+      display: block;
+      color: black;
+      padding: 16px;
+      text-decoration: none;
+    }
+} 
+
+ 
+.sidebar a.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.sidebar a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+}
+
+div{
+  .content {
+    margin-left: 200px;
+    padding: 1px 16px;
+}
+}
+
+@media screen and (max-width: 700px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .sidebar a {float: left;}
+  div.content {margin-left: 0;}
+}
+
+@media screen and (max-width: 400px) {
+  .sidebar a {
+    text-align: center;
+    float: none;
+  }
+  }
+  .cardContainer{
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 205px;
+    :hover{
+      -webkit-box-shadow: 0px 0px 21px 0px rgba(179,177,179,0.67);
+      -moz-box-shadow: 0px 0px 21px 0px rgba(179,177,179,0.67);
+      box-shadow: 0px 0px 21px 0px rgba(179,177,179,0.67); 
+    }
+    .card{
+      max-width: 300px;
+      max-height:  fit-content;
+      margin: 50px;
+    }
+    img{
+      border: 1px solid #e2e2e2;
+      border-radius: 10px;
+      height: auto;
+    }
+  }
+  
