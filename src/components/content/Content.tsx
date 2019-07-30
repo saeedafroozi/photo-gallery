@@ -2,45 +2,59 @@ import React from 'react'
 import { useEffect, useReducer } from 'react'
 import Menu from '../menu/index'
 import { Card } from '../card/index'
+import { FetchType } from '../config/enum'
+import TransportLayer from '../transportLayer';
+import uuid from 'uuid'
 
 interface Action {
     type: string;
-    payload: any;
+    payload: ContentState;
 }
 interface ContentState {
-    category: Category[];
-    selectedCategory: number;
-    images: Image[];
-    isLoading: boolean;
+    categories?: Category[];
+    selectedCategory?: number;
+    images?: Image[];
+    isLoading?: boolean;
+    total?: number;
+    pageIndex?: number;
 }
+let transportLayer: ITransportLayer = new TransportLayer();
 
 function reducer(state: ContentState, action: Action): ContentState {
     switch (action.type) {
-        case 'INIT':
+        case 'INITCATEGORY':
             return {
                 ...state,
-                category: action.payload.category,
+                categories: action.payload.categories,
                 selectedCategory: action.payload.selectedCategory,
                 isLoading: false
             };
-        case 'SelectCategory':
+        case 'INITIMAGES':
+            return {
+                ...state,
+                images: action.payload.images,
+                isLoading: false,
+                total: action.payload.total
+            };
+        case 'SELECTGATEGORY':
             return {
                 ...state,
                 selectedCategory: action.payload.selectedCategory,
                 images: action.payload.images,
-                isLoading: false
+                isLoading: false,
+                pageIndex: 1
             };
-        case 'SetIsLoading':
+        case 'SETISLOADING':
             return {
                 ...state,
                 isLoading: true
             };
-        case 'LoadMore':
+        case 'LOADMORE':
             return {
                 ...state,
-                selectedCategory: action.payload.selectedCategory,
-                images: action.payload.images,
-                isLoading: false
+                images: [...state.images, ...action.payload.images],
+                isLoading: false,
+                pageIndex: action.payload.pageIndex,
             };
         default:
             return { ...state };
@@ -48,47 +62,57 @@ function reducer(state: ContentState, action: Action): ContentState {
 }
 const Content = () => {
     const [state, dispatch] = useReducer(reducer, {
-        category: [],
+        categories: [],
         images: [],
         selectedCategory: 0,
-        isLoading: false
+        isLoading: false,
+        total: 0,
+        pageIndex: 1
     });
 
-    const { category, selectedCategory, images, isLoading } = state;
+    const { categories, selectedCategory, images, isLoading, pageIndex, total } = state;
 
     React.useEffect(() => {
-        fetch("https://api.thecatapi.com/v1/categories")
-            .then(response => response.json())
-            .then(responseData => {
+        transportLayer.getServerData("https://api.thecatapi.com/v1/categories", FetchType.Category).then((responseData: ResponseResult) => {
+            dispatch({
+                type: 'INITCATEGORY',
+                payload: {
+                    categories: responseData.categories,
+                    selectedCategory: responseData.categories[0].id
+                }
+            });
+            const categoryId = responseData.categories ? responseData.categories[0].id : 0;
+            transportLayer.getServerData(`https://api.thecatapi.com/v1/images/search?limit=${10}&page=${pageIndex}&category_ids=${categoryId}`, FetchType.Image).then((responseData: ResponseResult) => {
                 dispatch({
-                    type: 'INIT',
+                    type: 'INITIMAGES',
                     payload: {
-                        category: responseData,
-                        selectedCategory: responseData[0].id
+                        images: responseData.images,
+                        total: responseData.total
                     }
                 });
-            })
+            });
+        });
+
     }, [])
+
     function handleClick(id: number) {
         if (!isLoading) {
             dispatch({
-                type: 'SetIsLoading',
+                type: 'SETISLOADING',
                 payload: {
                     isLoading: true
                 }
             });
             if (id !== state.selectedCategory) {
-                fetch(`https://api.thecatapi.com/v1/images/search?limit=${10}&category_ids=${id}`)
-                    .then(response => response.json())
-                    .then((responseData: Image[]) => {
-                        dispatch({
-                            type: 'SelectCategory',
-                            payload: {
-                                selectedCategory: id,
-                                images: responseData
-                            }
-                        });
-                    })
+                transportLayer.getServerData(`https://api.thecatapi.com/v1/images/search?limit=${10}&page=${pageIndex}&category_ids=${id}`, FetchType.Image).then((responseData: ResponseResult) => {
+                    dispatch({
+                        type: 'SELECTGATEGORY',
+                        payload: {
+                            images: responseData.images,
+                            selectedCategory: id
+                        }
+                    });
+                });
             }
         }
     }
@@ -97,40 +121,40 @@ const Content = () => {
     function handleLoadMore() {
         if (!isLoading) {
             dispatch({
-                type: 'setIsLoading',
+                type: 'SETISLOADING',
                 payload: {
                     isLoading: true
                 }
             });
-            fetch(`https://api.thecatapi.com/v1/images/search?limit=${10}&category_ids=${selectedCategory}`)
+            fetch(`https://api.thecatapi.com/v1/images/search?limit=${10}&page=${pageIndex + 1}&category_ids=${selectedCategory}`)
                 .then(response => response.json())
                 .then((responseData: Image[]) => {
                     dispatch({
-                        type: 'LoadMore',
+                        type: 'LOADMORE',
                         payload: {
-                            selectedCategory: selectedCategory,
-                            images: responseData
+                            images: responseData,
+                            pageIndex: pageIndex + 1
                         }
                     });
                 })
         }
-
-
-        return (<React.Fragment>
-            <Menu category={category} selectedCategory={selectedCategory} onClick={handleClick} />
-            <div className="cardContainer">
-                {images.map((item: Image, index) => {
-                    return <Card
-                        key={item.id}
-                        image={item}
-                    />
-                })}
-            </div>
-            <div>
-                <input onClick={handleLoadMore} type="button">Show More</input>
-            </div>
-        </React.Fragment>
-        )
     }
+
+    return (<React.Fragment>
+        <Menu category={categories} selectedCategory={selectedCategory} onClick={handleClick} />
+        <div className="cardContainer">
+            {images.map((item: Image, index) => {
+                return <Card
+                    key={uuid()}
+                    image={item}
+                />
+            })}
+        </div>
+        <div className="loadMore">
+            {pageIndex * 10 < total && <button className="button" onClick={handleLoadMore} >LoadMore</button>}
+        </div>
+    </React.Fragment>
+    )
 }
+
 export default Content;
