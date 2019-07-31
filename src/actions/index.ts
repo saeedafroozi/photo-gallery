@@ -1,39 +1,49 @@
 import TransportLayer from '../components/transportLayer'
 import { FetchType } from '../../src/contansts/config/enum'
-import { imageApi } from '../contansts/config/api'
+import { imageApi, fecthConfig } from '../contansts/config/api'
 
 export const ACTION_TYPES = {
     INIT_CATEGORY: 'INIT_CATEGORY',
     INIT_IMAGES: 'INIT_IMAGES',
-    SELECT_GATEGORY: 'SELECT_GATEGORY',
+    SELECT_CATEGORY: 'SELECT_CATEGORY',
     SET_ISLOADING: 'SET_ISLOADING',
     LOAD_MORE: 'LOAD_MORE'
 }
-
+const mapToResponseResult = (type: FetchType, response, data) => {
+    const responseData: ResponseResult = {
+        images: type !== FetchType.Category ? data : [],
+        categories: type !== FetchType.Category ? [] : data,
+        total: type !== FetchType.Category ? Number(response.headers.get('Pagination-Count')) : 0
+    }
+    return responseData;
+}
 export const initCategory = (url: string, pageIndex: number, limitSize: number) => dispatch => {
-    TransportLayer().
-        getServerData(url, FetchType.Category).then((responseData: ResponseResult) => {
-            dispatch({
-                type: ACTION_TYPES.INIT_CATEGORY,
-                payload: responseData
-            });
-            dispatch(initImages(`${imageApi}?limit=${limitSize}&page=${pageIndex}&category_ids=${responseData.categories[0].id}`))
-        });
+    return fetch(url, fecthConfig)
+        .then(response => {
+            response.json()
+                .then((data: Category[]) => {
+                    const responseData = mapToResponseResult(FetchType.Category, response, data)
+                    dispatch({
+                        type: ACTION_TYPES.INIT_CATEGORY,
+                        payload: responseData
+                    });
+                    dispatch(initImages(`${imageApi}?limit=${limitSize}&page=${pageIndex}&category_ids=${responseData.categories[0].id}`))
+                })
+        }).catch(ex => dispatch(fetchTodosFailure(ex)))
 }
 export const initImages = (url: string) => dispatch => {
-    TransportLayer().getServerData(url, FetchType.Image).then((responseData: ResponseResult) => {
-        dispatch({
-            type: ACTION_TYPES.INIT_IMAGES,
-            payload: responseData
-        });
-    });
+    return fetch(url, fecthConfig)
+        .then(response => {
+            response.json()
+                .then((data: Image[]) => {
+                    const responseData = mapToResponseResult(FetchType.Image, response, data)
+                    dispatch({
+                        type: ACTION_TYPES.INIT_IMAGES,
+                        payload: responseData
+                    });
+                })
+        }).catch(ex => dispatch(fetchTodosFailure(ex)))
 }
-// export const setIsLoading = (isLoading: boolean) => dispatch => {
-//     dispatch({
-//         type: ACTION_TYPES.SET_ISLOADING,
-//         payload: isLoading
-//     });
-// }
 export const setIsLoading = (isLoading: boolean) => {
     return {
         type: ACTION_TYPES.SET_ISLOADING,
@@ -41,40 +51,35 @@ export const setIsLoading = (isLoading: boolean) => {
     };
 }
 export const setCategory = (url: string, selectedCategory: number) => dispatch => {
-    const result=await TransportLayer().getServerData(url, FetchType.Image);
-        then((responseData: ResponseResult) => {
-            responseData.selectedCategory = selectedCategory;
-            dispatch({
-                type: ACTION_TYPES.SELECT_GATEGORY,
-                payload: responseData
-            });
-        }).catch((er) => dispatch(fetchTodosFailure(er)));
+    return fetch(url, fecthConfig)
+        .then(response => {
+            response.json()
+                .then((data: Image[]) => {
+                    const responseData = mapToResponseResult(FetchType.Image, response, data)
+                    responseData.selectedCategory = selectedCategory;
 
-    // return fetch(url, {
-    //     method: 'GET',
-    //     headers: {
-    //         'X-API-KEY': process.env.REACT_APP_AUTH_TOKEN,
-    //         'Content-Type': 'application/json'
-    //     }
-    // })
-    //     .then(r => r.json())
-    //     .then((responseData) => {
-    //         dispatch({
-    //             type: ACTION_TYPES.SELECT_GATEGORY,
-    //             payload: responseData
-    //         });
-    //     })
+                    dispatch({
+                        type: ACTION_TYPES.SELECT_CATEGORY,
+                        payload: responseData
+                    });
+                })
+        }).catch(ex => dispatch(fetchTodosFailure(ex)))
 }
 export const loadMore = (url: string) => dispatch => {
-    TransportLayer().getServerData(url, FetchType.Image).
-        then((responseData: ResponseResult) => {
-            dispatch({
-                type: ACTION_TYPES.LOAD_MORE,
-                payload: responseData
-            });
-        });
+    return fetch(url, fecthConfig)
+        .then(response => {
+            response.json()
+                .then((data: Image[]) => {
+                    const responseData = mapToResponseResult(FetchType.Image, response, data)
+                    dispatch({
+                        type: ACTION_TYPES.LOAD_MORE,
+                        payload: responseData
+                    });
+                })
+        }).catch(ex => dispatch(fetchTodosFailure(ex)))
 }
 function fetchTodosFailure(ex) {
+
     return {
         type: 'FETCH_TODOS_FAILURE',
         ex

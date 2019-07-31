@@ -38,7 +38,7 @@ export default (state: ContentState = initState, action: Action): ContentState =
                 isLoading: false,
                 total: action.payload.total
             };
-        case ACTION_TYPES.SELECT_GATEGORY:
+        case ACTION_TYPES.SELECT_CATEGORY:
             return {
                 ...state,
                 selectedCategory: action.payload.selectedCategory,
