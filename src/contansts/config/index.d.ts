@@ -19,3 +19,15 @@ interface ResponseResult {
     total?: number;
     selectedCategory?:number
 }
+interface Action {
+    type: string;
+    payload: ContentState;
+}
+interface ContentState {
+    categories?: Category[];
+    selectedCategory?: number;
+    images?: Image[];
+    isLoading?: boolean;
+    total?: number;
+    pageIndex?: number;
+}

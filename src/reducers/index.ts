@@ -1,3 +1,3 @@
 
-import gallery from './content'
+import gallery from './reducer'
 export {gallery}

@@ -1,16 +1,5 @@
 import { ACTION_TYPES } from '../actions/index'
-interface Action {
-    type: string;
-    payload: ContentState;
-}
-interface ContentState {
-    categories?: Category[];
-    selectedCategory?: number;
-    images?: Image[];
-    isLoading?: boolean;
-    total?: number;
-    pageIndex?: number;
-}
+
 const initState = {
     categories: [],
     images: [],
@@ -59,6 +48,6 @@ export default (state: ContentState = initState, action: Action): ContentState =
                 pageIndex: state.pageIndex + 1,
             };
         default:
-            return { ...state };
+            return state ;
     }
 }   
