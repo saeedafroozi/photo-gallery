@@ -41,13 +41,29 @@ export const setIsLoading = (isLoading: boolean) => {
     };
 }
 export const setCategory = (url: string, selectedCategory: number) => dispatch => {
-    TransportLayer().getServerData(url, FetchType.Image).then((responseData: ResponseResult) => {
-        responseData.selectedCategory = selectedCategory;
-        dispatch({
-            type: ACTION_TYPES.SELECT_GATEGORY,
-            payload: responseData
-        });
-    });
+    const result=await TransportLayer().getServerData(url, FetchType.Image);
+        then((responseData: ResponseResult) => {
+            responseData.selectedCategory = selectedCategory;
+            dispatch({
+                type: ACTION_TYPES.SELECT_GATEGORY,
+                payload: responseData
+            });
+        }).catch((er) => dispatch(fetchTodosFailure(er)));
+
+    // return fetch(url, {
+    //     method: 'GET',
+    //     headers: {
+    //         'X-API-KEY': process.env.REACT_APP_AUTH_TOKEN,
+    //         'Content-Type': 'application/json'
+    //     }
+    // })
+    //     .then(r => r.json())
+    //     .then((responseData) => {
+    //         dispatch({
+    //             type: ACTION_TYPES.SELECT_GATEGORY,
+    //             payload: responseData
+    //         });
+    //     })
 }
 export const loadMore = (url: string) => dispatch => {
     TransportLayer().getServerData(url, FetchType.Image).
@@ -58,6 +74,13 @@ export const loadMore = (url: string) => dispatch => {
             });
         });
 }
+function fetchTodosFailure(ex) {
+    return {
+        type: 'FETCH_TODOS_FAILURE',
+        ex
+    }
+}
+
 
 
 
