@@ -114,8 +114,8 @@ div {
     text-align: center;
     float: none;
   }
-  .loadMore{
-    .button{
+  .loadMore {
+    .button {
       padding: 16px 12px;
     }
   }
@@ -158,4 +158,12 @@ div {
     -webkit-column-gap: 1.25rem;
     column-count: 5;
   }
+}
+.loader {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  z-index: 9999;
+  background: url;
 }

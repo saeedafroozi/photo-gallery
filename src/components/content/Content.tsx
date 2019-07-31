@@ -1,15 +1,19 @@
-import React from 'react'
-import { useEffect, useReducer } from 'react'
+import React, { Component } from 'react'
+import { useEffect } from 'react'
 import Menu from '../menu/index'
 import { Card } from '../card/index'
-import { FetchType } from '../config/enum'
-import TransportLayer from '../transportLayer';
+import { connect } from 'react-redux'
+import { Page_Index, Limit_Size } from '../../contansts/config/const'
+import { initImages, initCategory, setIsLoading, setCategory, loadMore } from '../../actions/index'
+import { categoryApi, imageApi } from '../../contansts/config/api'
 import uuid from 'uuid'
+import { ReactComponent as Spinner } from '../../resources/styles/icons/spinner.svg'
 
 interface Action {
     type: string;
     payload: ContentState;
 }
+
 interface ContentState {
     categories?: Category[];
     selectedCategory?: number;
@@ -18,132 +22,36 @@ interface ContentState {
     total?: number;
     pageIndex?: number;
 }
-let transportLayer: ITransportLayer = new TransportLayer();
-
-function reducer(state: ContentState, action: Action): ContentState {
-    switch (action.type) {
-        case 'INITCATEGORY':
-            return {
-                ...state,
-                categories: action.payload.categories,
-                selectedCategory: action.payload.selectedCategory,
-                isLoading: false
-            };
-        case 'INITIMAGES':
-            return {
-                ...state,
-                images: action.payload.images,
-                isLoading: false,
-                total: action.payload.total
-            };
-        case 'SELECTGATEGORY':
-            return {
-                ...state,
-                selectedCategory: action.payload.selectedCategory,
-                images: action.payload.images,
-                isLoading: false,
-                pageIndex: 1
-            };
-        case 'SETISLOADING':
-            return {
-                ...state,
-                isLoading: true
-            };
-        case 'LOADMORE':
-            return {
-                ...state,
-                images: [...state.images, ...action.payload.images],
-                isLoading: false,
-                pageIndex: action.payload.pageIndex,
-            };
-        default:
-            return { ...state };
-    }
+interface ContentProps {
+    dispatch?: (action) => void;
 }
-const Content = () => {
-    const [state, dispatch] = useReducer(reducer, {
-        categories: [],
-        images: [],
-        selectedCategory: 0,
-        isLoading: false,
-        total: 0,
-        pageIndex: 1
-    });
 
-    const { categories, selectedCategory, images, isLoading, pageIndex, total } = state;
+const Content = ({ dispatch, categories, selectedCategory, images, isLoading, total, pageIndex }: ContentState & ContentProps) => {
 
     React.useEffect(() => {
-        transportLayer.getServerData("https://api.thecatapi.com/v1/categories", FetchType.Category).then((responseData: ResponseResult) => {
-            dispatch({
-                type: 'INITCATEGORY',
-                payload: {
-                    categories: responseData.categories,
-                    selectedCategory: responseData.categories[0].id
-                }
-            });
-            const categoryId = responseData.categories ? responseData.categories[0].id : 0;
-            transportLayer.getServerData(`https://api.thecatapi.com/v1/images/search?limit=${10}&page=${pageIndex}&category_ids=${categoryId}`, FetchType.Image).then((responseData: ResponseResult) => {
-                dispatch({
-                    type: 'INITIMAGES',
-                    payload: {
-                        images: responseData.images,
-                        total: responseData.total
-                    }
-                });
-            });
-        });
-
+        dispatch(initCategory(categoryApi, Page_Index, Limit_Size))
     }, [])
 
     function handleClick(id: number) {
         if (!isLoading) {
-            dispatch({
-                type: 'SETISLOADING',
-                payload: {
-                    isLoading: true
-                }
-            });
-            if (id !== state.selectedCategory) {
-                transportLayer.getServerData(`https://api.thecatapi.com/v1/images/search?limit=${10}&page=${pageIndex}&category_ids=${id}`, FetchType.Image).then((responseData: ResponseResult) => {
-                    dispatch({
-                        type: 'SELECTGATEGORY',
-                        payload: {
-                            images: responseData.images,
-                            selectedCategory: id
-                        }
-                    });
-                });
+            dispatch(setIsLoading(true))
+            if (id !== selectedCategory) {
+                dispatch(setCategory(`${imageApi}?limit=${10}&page=${pageIndex}&category_ids=${id}`, id));
             }
         }
     }
 
-
     function handleLoadMore() {
         if (!isLoading) {
-            dispatch({
-                type: 'SETISLOADING',
-                payload: {
-                    isLoading: true
-                }
-            });
-            fetch(`https://api.thecatapi.com/v1/images/search?limit=${10}&page=${pageIndex + 1}&category_ids=${selectedCategory}`)
-                .then(response => response.json())
-                .then((responseData: Image[]) => {
-                    dispatch({
-                        type: 'LOADMORE',
-                        payload: {
-                            images: responseData,
-                            pageIndex: pageIndex + 1
-                        }
-                    });
-                })
+            dispatch(setIsLoading(true))
+            dispatch(loadMore(`${imageApi}?limit=${10}&page=${pageIndex + 1}&category_ids=${selectedCategory}`));
         }
     }
 
     return (<React.Fragment>
         <Menu category={categories} selectedCategory={selectedCategory} onClick={handleClick} />
         <div className="cardContainer">
-            {images.map((item: Image, index) => {
+            {(images || []).map((item: Image, index) => {
                 return <Card
                     key={uuid()}
                     image={item}
@@ -153,8 +61,16 @@ const Content = () => {
         <div className="loadMore">
             {pageIndex * 10 < total && <button className="button" onClick={handleLoadMore} >LoadMore</button>}
         </div>
+        {isLoading && <Spinner className="loader" />}
     </React.Fragment>
     )
 }
+function mapStateToProps(state) {
+    const { categories, selectedCategory, images, isLoading, total, pageIndex } = state
+    return { categories, selectedCategory, images, isLoading, total, pageIndex };
+}
+// const mapDispatchToProps = (dispatch, ownProps) => {
+//     handleClick: (id:number) => dispatch(initCategory(categoryApi))
+// }
 
-export default Content;
+export default connect(mapStateToProps)(Content)

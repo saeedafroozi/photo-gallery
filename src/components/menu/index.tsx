@@ -1,9 +1,11 @@
 import * as React from 'react'
+
 interface MenuProps {
     category: Category[];
     selectedCategory: number;
     onClick: (id: number) => void;
 }
+
 const Menu = ({ category, selectedCategory, onClick }: MenuProps) => {
     return (<div className="sidebar">
         <div className="menu">
@@ -20,4 +22,5 @@ const Menu = ({ category, selectedCategory, onClick }: MenuProps) => {
         </div>
     </div>)
 }
+
 export default Menu;
