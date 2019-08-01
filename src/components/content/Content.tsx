@@ -49,7 +49,11 @@ const Content = ({ dispatch, categories, selectedCategory, images, isLoading, to
     }
 
     return (<React.Fragment>
-        <Menu category={categories} selectedCategory={selectedCategory} onClick={handleClick} />
+        <Menu
+            category={categories}
+            selectedCategory={selectedCategory}
+            onClick={handleClick}
+        />
         <div className="cardContainer">
             {(images || []).map((item: Image, index) => {
                 return <Card
@@ -59,7 +63,10 @@ const Content = ({ dispatch, categories, selectedCategory, images, isLoading, to
             })}
         </div>
         <div className="loadMore">
-            {pageIndex * 10 < total && <button className="button" onClick={handleLoadMore} >LoadMore</button>}
+            {pageIndex * 10 < total && <button
+                className="button"
+                onClick={handleLoadMore} >LoadMore
+             </button>}
         </div>
         {isLoading && <Spinner className="loader" />}
     </React.Fragment>
@@ -69,8 +76,5 @@ function mapStateToProps(state) {
     const { categories, selectedCategory, images, isLoading, total, pageIndex } = state
     return { categories, selectedCategory, images, isLoading, total, pageIndex };
 }
-// const mapDispatchToProps = (dispatch, ownProps) => {
-//     handleClick: (id:number) => dispatch(initCategory(categoryApi))
-// }
 
 export default connect(mapStateToProps)(Content)

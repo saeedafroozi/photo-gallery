@@ -24,7 +24,7 @@ interface Image {
 }
 
 //------------------------Test Actions----------------------------
-describe('TEst Async Action', () => {
+describe('Test Async Action', () => {
     afterEach(() => {
         fetchMock.restore()
     })

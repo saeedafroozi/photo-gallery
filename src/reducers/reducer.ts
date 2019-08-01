@@ -48,6 +48,6 @@ export default (state: ContentState = initState, action: Action): ContentState =
                 pageIndex: state.pageIndex + 1,
             };
         default:
-            return state ;
+            return state;
     }
 }   

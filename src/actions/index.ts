@@ -1,4 +1,4 @@
-import TransportLayer from '../components/transportLayer'
+
 import { FetchType } from '../../src/contansts/config/enum'
 import { imageApi, fecthConfig } from '../contansts/config/api'
 

@@ -2,6 +2,7 @@ interface Category {
     id: number;
     name: string;
 }
+
 interface Image {
     breeds: any;
     categories: Category[];
@@ -10,19 +11,19 @@ interface Image {
     url: string;
     width: number;
 }
-interface ITransportLayer {
-    getServerData(url: string, type: FetchType): Promise<ResponseResult>
-}
+
 interface ResponseResult {
     images?: Image[];
     categories?: Category[];
     total?: number;
-    selectedCategory?:number
+    selectedCategory?: number
 }
+
 interface Action {
     type: string;
     payload: ContentState;
 }
+
 interface ContentState {
     categories?: Category[];
     selectedCategory?: number;
