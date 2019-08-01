@@ -1,44 +1,43 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Developed With Visual Studio Code -A source code editor developed by Microsoft for Windows, Linux and macOS. It includes support for debugging, embedded Git control, syntax highlighting, intelligent code completion, snippets, and code refactoring
 
-## Available Scripts
+Node.js - Javascript runtime
 
-In the project directory, you can run:
+React - A javascript library for building user interfaces
 
-### `npm start`
+Babel - A transpiler for javascript
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Webpack - A module bundler
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+**** I've test this app Only on chrome
 
-### `npm test`
+Getting Started
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-### `npm run build`
+Prerequisites
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The following software is required to be installed on your system:
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+Node 8.x
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Npm 3.x
 
-### `npm run eject`
+Type the following commands in the terminal to verify your node and npm versions
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+node -v
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+npm -v
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Install Instructions:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Follow the following steps to get development environment running.
 
-## Learn More
+Install node modules
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Install:$ npm install
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Build application and start watching for changes
+
+Building:$ npm run build
+
+Starting:$ npm run start
