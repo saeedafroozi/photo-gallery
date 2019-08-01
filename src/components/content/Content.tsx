@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { useEffect } from 'react'
 import Menu from '../menu/index'
 import { Card } from '../card/index'
@@ -7,7 +7,7 @@ import { Page_Index, Limit_Size } from '../../contansts/config/const'
 import { initImages, initCategory, setIsLoading, setCategory, loadMore } from '../../actions/index'
 import { categoryApi, imageApi } from '../../contansts/config/api'
 import uuid from 'uuid'
-import { ReactComponent as Spinner } from '../../resources/styles/icons/spinner.svg'
+import { ReactComponent as Spinner } from '../../resources/icons/spinner.svg'
 
 interface Action {
     type: string;
@@ -47,6 +47,7 @@ const Content = ({ dispatch, categories, selectedCategory, images, isLoading, to
             dispatch(loadMore(`${imageApi}?limit=${10}&page=${pageIndex + 1}&category_ids=${selectedCategory}`));
         }
     }
+
 
     return (<React.Fragment>
         <Menu

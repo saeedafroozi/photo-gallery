@@ -14,6 +14,7 @@ const Menu = ({ category, selectedCategory, onClick }: MenuProps) => {
                     key={item.id}
                     className={item.id === selectedCategory ? "active" : null}
                     onClick={() => onClick(item.id)}
+                    href={`#${item.name}`}
                 >
                     <b>{item.name}</b>
                 </a>

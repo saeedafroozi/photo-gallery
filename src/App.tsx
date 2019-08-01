@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from '../src/resources/icons/logo.svg';
 import { Content } from './components/content/index'
 import { Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
