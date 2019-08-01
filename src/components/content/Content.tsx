@@ -34,8 +34,8 @@ const Content = ({ dispatch, categories, selectedCategory, images, isLoading, to
 
     function handleClick(id: number) {
         if (!isLoading) {
-            dispatch(setIsLoading(true))
             if (id !== selectedCategory) {
+                dispatch(setIsLoading(true))
                 dispatch(setCategory(`${imageApi}?limit=${10}&page=${pageIndex}&category_ids=${id}`, id));
             }
         }
