@@ -18,6 +18,7 @@ const mapToResponseResult = (type: FetchType, response, data) => {
     return responseData;
 }
 export const initCategory = (url: string, pageIndex: number, limitSize: number) => dispatch => {
+    dispatch(setIsLoading(true));
     return fetch(url, fecthConfig)
         .then(response => {
             response.json()
@@ -29,7 +30,7 @@ export const initCategory = (url: string, pageIndex: number, limitSize: number) 
                     });
                     dispatch(initImages(`${imageApi}?limit=${limitSize}&page=${pageIndex}&category_ids=${responseData.categories[0].id}`))
                 })
-        }).catch(ex => dispatch(fetchTodosFailure(ex)))
+        }).catch(ex => dispatch(fetchFailure(ex)))
 }
 export const initImages = (url: string) => dispatch => {
     return fetch(url, fecthConfig)
@@ -42,7 +43,7 @@ export const initImages = (url: string) => dispatch => {
                         payload: responseData
                     });
                 })
-        }).catch(ex => dispatch(fetchTodosFailure(ex)))
+        }).catch(ex => dispatch(fetchFailure(ex)))
 }
 export const setIsLoading = (isLoading: boolean) => {
     return {
@@ -51,6 +52,7 @@ export const setIsLoading = (isLoading: boolean) => {
     };
 }
 export const setCategory = (url: string, selectedCategory: number) => dispatch => {
+    dispatch(setIsLoading(true));
     return fetch(url, fecthConfig)
         .then(response => {
             response.json()
@@ -63,9 +65,10 @@ export const setCategory = (url: string, selectedCategory: number) => dispatch =
                         payload: responseData
                     });
                 })
-        }).catch(ex => dispatch(fetchTodosFailure(ex)))
+        }).catch(ex => dispatch(fetchFailure(ex)))
 }
 export const loadMore = (url: string) => dispatch => {
+    dispatch(setIsLoading(true));
     return fetch(url, fecthConfig)
         .then(response => {
             response.json()
@@ -76,12 +79,12 @@ export const loadMore = (url: string) => dispatch => {
                         payload: responseData
                     });
                 })
-        }).catch(ex => dispatch(fetchTodosFailure(ex)))
+        }).catch(ex => dispatch(fetchFailure(ex)))
 }
-function fetchTodosFailure(ex) {
+function fetchFailure(ex) {
 
     return {
-        type: 'FETCH_TODOS_FAILURE',
+        type: 'fetchFailure',
         ex
     }
 }

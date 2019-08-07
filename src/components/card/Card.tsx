@@ -14,7 +14,7 @@ const Card = ({ image }: CardProps) => {
             <img
                 src={!showNoImage ? image.url : img}
                 alt="cate"
-
+                onError={handleError}
             />
         </div>
     )

@@ -4,10 +4,11 @@ import Menu from '../menu/index'
 import { Card } from '../card/index'
 import { connect } from 'react-redux'
 import { Page_Index, Limit_Size } from '../../contansts/config/const'
-import { initImages, initCategory, setIsLoading, setCategory, loadMore } from '../../actions/index'
+import { initCategory, setCategory, loadMore } from '../../actions/index'
 import { categoryApi, imageApi } from '../../contansts/config/api'
 import uuid from 'uuid'
 import { ReactComponent as Spinner } from '../../resources/icons/spinner.svg'
+import { bindActionCreators } from 'redux'
 
 interface Action {
     type: string;
@@ -24,36 +25,23 @@ interface ContentState {
 }
 interface ContentProps {
     dispatch?: (action) => void;
+    setCategory: (url: string, selectedCategory: number) => void;
+    initCategory: (categoryApi: string, Page_Index: number, Limit_Size: number) => void;
+    loadMore: (url: string) => void;
 }
 
-const Content = ({ dispatch, categories, selectedCategory, images, isLoading, total, pageIndex }: ContentState & ContentProps) => {
+const Content = ({ dispatch, categories, selectedCategory, images, isLoading, total, pageIndex, initCategory, setCategory, loadMore }: ContentState & ContentProps) => {
 
-    React.useEffect(() => {
-        dispatch(initCategory(categoryApi, Page_Index, Limit_Size))
-    }, [])
-
-    function handleClick(id: number) {
-        if (!isLoading) {
-            if (id !== selectedCategory) {
-                dispatch(setIsLoading(true))
-                dispatch(setCategory(`${imageApi}?limit=${10}&page=${pageIndex}&category_ids=${id}`, id));
-            }
-        }
-    }
-
-    function handleLoadMore() {
-        if (!isLoading) {
-            dispatch(setIsLoading(true))
-            dispatch(loadMore(`${imageApi}?limit=${10}&page=${pageIndex + 1}&category_ids=${selectedCategory}`));
-        }
-    }
-
+    useEffect(() => {
+        initCategory(categoryApi, Page_Index, Limit_Size);
+    }, [initCategory])
 
     return (<React.Fragment>
         <Menu
             category={categories}
             selectedCategory={selectedCategory}
-            onClick={handleClick}
+            onClick={(id) => setCategory(`${imageApi}?limit=${10}&page=${pageIndex}&category_ids=${id}`, id)}
+            isLoading={isLoading}
         />
         <div className="cardContainer">
             {(images || []).map((item: Image, index) => {
@@ -66,16 +54,22 @@ const Content = ({ dispatch, categories, selectedCategory, images, isLoading, to
         <div className="loadMore">
             {pageIndex * 10 < total && <button
                 className="button"
-                onClick={handleLoadMore} >LoadMore
+                disabled={isLoading}
+                onClick={() => loadMore(`${imageApi}?limit=${10}&page=${pageIndex + 1}&category_ids=${selectedCategory}`)} >LoadMore
              </button>}
         </div>
         {isLoading && <Spinner className="loader" />}
     </React.Fragment>
     )
 }
+
 function mapStateToProps(state) {
     const { categories, selectedCategory, images, isLoading, total, pageIndex } = state
     return { categories, selectedCategory, images, isLoading, total, pageIndex };
 }
 
-export default connect(mapStateToProps)(Content)
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ initCategory, setCategory, loadMore }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Content)
