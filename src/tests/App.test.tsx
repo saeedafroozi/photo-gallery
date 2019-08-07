@@ -2,11 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import fetchMock from 'fetch-mock/es5/client'
 import configureMockStore from 'redux-mock-store'
-import App from './App'
-import { ACTION_TYPES, setIsLoading, setCategory, loadMore, initCategory, initImages } from '../src/actions/index'
+import App from '../App'
+import { ACTION_TYPES, setIsLoading, setCategory, loadMore, initCategory, initImages } from '../../src/actions/index'
 import thunk from 'redux-thunk'
-import { gallery } from '../src/reducers/index'
-import { Action } from 'redux';
+import { gallery } from '../../src/reducers/index'
 const mockStore = configureMockStore([thunk])
 
 
@@ -50,6 +49,11 @@ describe('Test Async Action', () => {
 
         const expectedActions = [
             {
+                type: ACTION_TYPES.SET_ISLOADING,
+                payload: true
+            }
+            ,
+            {
                 type: ACTION_TYPES.SELECT_CATEGORY,
                 payload: {
                     categories: [],
@@ -85,6 +89,10 @@ describe('Test Async Action', () => {
 
         const expectedActions = [
             {
+                type: ACTION_TYPES.SET_ISLOADING,
+                payload: true
+            },
+            {
                 type: ACTION_TYPES.LOAD_MORE,
                 payload: {
                     categories: [],
@@ -109,6 +117,10 @@ describe('Test Async Action', () => {
     it('mocking InitCategory action', () => {
         fetchMock.getOnce('*', [{ id: 5, name: "boxes" }])
         const expectedActions = [
+            {
+                type: ACTION_TYPES.SET_ISLOADING,
+                payload: true
+            },
             {
                 type: ACTION_TYPES.INIT_CATEGORY,
                 payload: {
