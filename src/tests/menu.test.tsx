@@ -47,18 +47,12 @@ describe('components', () => {
             const { enzymeWrapper, props } = setup()
             const firstCategory = enzymeWrapper.find('a').at(0)
             
-            //category.props().onClick('1')
-            //category.simulate('click', { preventDefault() { } })
-
-            const evt = { preventDefault: jest.fn() }
-            //firstCategory.props().onClick('1')
-            //expect(props.onClick.mock.calls.length).toBe(0)
             firstCategory.simulate('click', { preventDefault() { } })
 
 
             const secondCategory = enzymeWrapper.find('a').at(1)
             secondCategory.props().onClick('2')
-            console.log(props.onClick.mock.calls.length)
+            //props.onClick.mock.calls.length return the number of calls
             expect(props.onClick.mock.calls.length).toBe(1)
         })
     })
