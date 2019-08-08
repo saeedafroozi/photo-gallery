@@ -7,14 +7,14 @@ interface MenuProps {
     isLoading: boolean;
 }
 
-const Menu = ({ category, selectedCategory, onClick,isLoading }: MenuProps) => {
+const Menu = ({ category, selectedCategory, onClick, isLoading }: MenuProps) => {
     return (<div className="sidebar">
         <div className="menu">
             {category.map((item, index) => {
                 return <a
                     key={item.id}
                     className={item.id === selectedCategory ? "active" : null}
-                    onClick={() => onClick(item.id)}
+                    onClick={item.id !== selectedCategory && !isLoading ? (e) => onClick(item.id) : (e) => e.preventDefault()}
                     href={`#${item.name}`}
                 >
                     <b>{item.name}</b>
